@@ -1,6 +1,6 @@
 import sys
 import struct
-import uuid
+# import uuid
 
 file1 = sys.argv[1]
 file2 = sys.argv[2]
