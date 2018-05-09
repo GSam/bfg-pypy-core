@@ -20,7 +20,7 @@ for b in f1.read():
 
 # id_uuid = uuid.uuid4().bytes
 # id_uuid = uuid.UUID(int=uuid.uuid4().int | (1 << 127)).bytes
-f2.write(id_uuid)
+# f2.write(id_uuid)
 
 f2.close()
 f1.close()
