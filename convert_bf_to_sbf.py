@@ -8,13 +8,15 @@ file2 = sys.argv[2]
 f1 = open(file1, 'rb')
 f2 = open(file2, 'wb')
 
+token_width = 'Q'
+
 for b in f1.read():
     if b == '\n':
         continue
     print b, 1
-    data = struct.pack(">Q", 0)
+    data = struct.pack(">%s" % token_width, 0)
     f2.write(data)
-    data = struct.pack(">Q", ord(b))
+    data = struct.pack(">%s" % token_width, ord(b))
     print repr(data)
     f2.write(data)
 
