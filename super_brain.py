@@ -169,4 +169,4 @@ def jitpolicy(driver):
     return JitPolicy()
 
 if __name__ == "__main__":
-entry_point(sys.argv)
+    entry_point(sys.argv)

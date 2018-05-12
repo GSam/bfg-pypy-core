@@ -112,12 +112,19 @@ class Tape(object):
     def create_str_obj(self):
         self.objecttape["STRING"] = [""]
 
+import struct
+
 def parse(program):
     parsed = []
     bracket_map = {}
     leftstack = []
 
     pc = 0
+
+    import pdb
+    pdb.set_trace()
+
+    struct.unpack(">%s" % token_width, 0)
     for char in program:
         if char in ('[', ']', '<', '>', '+', '-', ',', '.'):
             parsed.append(char)
@@ -169,4 +176,4 @@ def jitpolicy(driver):
     return JitPolicy()
 
 if __name__ == "__main__":
-entry_point(sys.argv)
+    entry_point(sys.argv)
