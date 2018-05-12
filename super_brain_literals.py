@@ -121,24 +121,22 @@ def parse(program):
 
     pc = 0
 
-    import pdb
-    pdb.set_trace()
+    instruct_len = len(program) / 16
+    for x in xrange(instruct_len):
+        instruction = struct.unpack('>QQ', program[(x*16):(x+1)*16])
+        _, _, _, _, f_byte = struct.unpack('>QLHBB', program[(x*16):(x+1)*16])
+        parsed.append(instruction)
 
-    struct.unpack(">%s" % token_width, 0)
-    for char in program:
-        if char in ('[', ']', '<', '>', '+', '-', ',', '.'):
-            parsed.append(char)
+        if f_byte & ord('[') == ord('['):
+            leftstack.append(pc)
+        elif f_byte & ord(']') == ord(']'):
+            left = leftstack.pop()
+            right = pc
+            bracket_map[left] = right
+            bracket_map[right] = left
+        pc += 1
 
-            if char == '[':
-                leftstack.append(pc)
-            elif char == ']':
-                left = leftstack.pop()
-                right = pc
-                bracket_map[left] = right
-                bracket_map[right] = left
-            pc += 1
-    
-    return "".join(parsed), bracket_map
+    return parsed, bracket_map
 
 def run(fp, args=[]):
     program_contents = ""
