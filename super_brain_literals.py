@@ -50,38 +50,38 @@ def mainloop(program, func_map, bracket_map, args=[]):
         jitdriver.jit_merge_point(pc=pc, tape=tape, program=program,
                 bracket_map=bracket_map)
 
-        code = program[pc]
+        code1, code2 = program[pc]
 
-        if code == ">":
+        if (code2 & 0xFF) & ord(">") == ord(">"):
             tape.advance()
 
-        elif code == "<":
+        elif (code2 & 0xFF) & ord("<") == ord("<"):
             tape.devance()
 
-        elif code == "+":
+        elif (code2 & 0xFF) & ord("+") == ord("+"):
             tape.inc()
 
-        elif code == "-":
+        elif (code2 & 0xFF) & ord("-") == ord("-"):
             tape.dec()
-        
-        elif code == ".":
+
+        elif (code2 & 0xFF) & ord(".") == ord("."):
             # print
             os.write(1, chr(tape.get()))
-        
-        elif code == ",":
+
+        elif (code2 & 0xFF) & ord(",") == ord(","):
             # read from stdin
             tape.set(ord(os.read(0, 1)[0]))
 
-        elif code == "[" and tape.get() == 0:
+        elif ((code2 & 0xFF) & ord("[") == ord("[")) and tape.get() == 0:
             # Skip forward to the matching ]
             pc = get_matching_bracket(bracket_map, pc)
             
-        elif code == "]" and tape.get() != 0:
+        elif ((code2 & 0xFF) & ord("]") == ord("]")) and tape.get() != 0:
             # Skip back to the matching [
             pc = get_matching_bracket(bracket_map, pc)
 
-        elif code == "^":
-            tape.create_str_obj()
+        #elif code == "^":
+        #    tape.create_str_obj()
 
         #elif code == ";": # CONCAT
         #    os.write(1, func_map[code]("", "a"))
