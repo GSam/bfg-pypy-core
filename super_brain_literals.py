@@ -79,12 +79,9 @@ def mainloop(program, func_map, bracket_map, args=[]):
         elif ((code2 & 0xFF) & ord("]") == ord("]")) and tape.get() != 0:
             # Skip back to the matching [
             pc = get_matching_bracket(bracket_map, pc)
-
-        #elif code == "^":
-        #    tape.create_str_obj()
-
-        #elif code == ";": # CONCAT
-        #    os.write(1, func_map[code]("", "a"))
+        elif (code1 & 0x8000000000000000) != 0:
+            # Execute external function
+            pass
 
         pc += 1
 
