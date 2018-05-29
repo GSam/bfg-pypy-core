@@ -82,7 +82,11 @@ def mainloop(program, func_map, bracket_map, args=[]):
 
         elif (code1 & -0x8000000000000000) != 0:
             # Execute external function
-            pass
+            from cffi import FFI
+            ffi = FFI()
+            ffi.cdef("""void myprint(void);""")
+            testlib = ffi.dlopen(os.path.abspath('./testlib.so'))
+            testlib.myprint()
 
         pc += 1
 
