@@ -110,7 +110,8 @@ class Tape(object):
     def create_str_obj(self):
         self.objecttape["STRING"] = [""]
 
-import struct
+# from struct import unpack
+from rpython.rlib.rstruct.runpack import runpack as unpack
 
 def parse(program):
     parsed = []
@@ -121,8 +122,8 @@ def parse(program):
 
     instruct_len = len(program) / 16
     for x in xrange(instruct_len):
-        instruction = struct.unpack('>QQ', program[(x*16):(x+1)*16])
-        _, _, _, _, f_byte = struct.unpack('>QLHBB', program[(x*16):(x+1)*16])
+        instruction = unpack('>QQ', program[(x*16):(x+1)*16])
+        _, _, _, _, f_byte = unpack('>QLHBB', program[(x*16):(x+1)*16])
         parsed.append(instruction)
 
         if f_byte & ord('[') == ord('['):
