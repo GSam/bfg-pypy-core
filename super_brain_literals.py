@@ -75,12 +75,12 @@ def mainloop(program, func_map, bracket_map, args=[]):
         elif ((code2 & 0xFF) & ord("[") == ord("[")) and tape.get() == 0:
             # Skip forward to the matching ]
             pc = get_matching_bracket(bracket_map, pc)
-            
+
         elif ((code2 & 0xFF) & ord("]") == ord("]")) and tape.get() != 0:
             # Skip back to the matching [
             pc = get_matching_bracket(bracket_map, pc)
-            
-        elif (code1 & 0x8000000000000000) != 0:
+
+        elif (code1 & -0x8000000000000000) != 0:
             # Execute external function
             pass
 
