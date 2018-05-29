@@ -35,6 +35,10 @@ def get_matching_bracket(bracket_map, pc):
 def str_add(a, b):
     return str(a) + str(b)
 
+from rpython.rtyper.lltypesystem import rffi, lltype
+from rpython.translator.tool.cbuild import ExternalCompilationInfo
+external_function = rffi.llexternal('myprint', [], lltype.Void, compilation_info=ExternalCompilationInfo(libraries=[os.path.abspath('./testlib.so')]))
+
 def mainloop(program, func_map, bracket_map, args=[]):
     pc = 0
     tape = Tape()
@@ -82,11 +86,12 @@ def mainloop(program, func_map, bracket_map, args=[]):
 
         elif (code1 & -0x8000000000000000) != 0:
             # Execute external function
-            from cffi import FFI
-            ffi = FFI()
-            ffi.cdef("""void myprint(void);""")
-            testlib = ffi.dlopen(os.path.abspath('./testlib.so'))
-            testlib.myprint()
+            # from cffi import FFI
+            # ffi = FFI()
+            # ffi.cdef("""void myprint(void);""")
+            # testlib = ffi.dlopen(os.path.abspath('./testlib.so'))
+            # testlib.myprint()
+            external_function()
 
         pc += 1
 
