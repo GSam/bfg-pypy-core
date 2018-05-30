@@ -39,6 +39,10 @@ from rpython.rtyper.lltypesystem import rffi, lltype
 from rpython.translator.tool.cbuild import ExternalCompilationInfo
 external_function = rffi.llexternal('myprint', [], lltype.Void, compilation_info=ExternalCompilationInfo(libraries=[os.path.abspath('./testlib.so')]))
 
+integers = (18205517678580420323L, 13758535853895619339L)
+strings = (15067319853852934427L, 12316368836383623663L)
+doubles = (14398350657954990965L, 9297636822779032936L)
+
 def mainloop(program, func_map, bracket_map, args=[]):
     pc = 0
     tape = Tape()
