@@ -42,13 +42,13 @@ external_function = rffi.llexternal('myprint', [], lltype.Void,
                                                                              includes=[os.path.abspath('./stdlib.h')]))
 
 # struct.unpack('>QQ', uuid.UUID(int=uuid.uuid4().int | (1 << 127)).bytes)
-integers = (18205517678580420323L, 13758535853895619339L)
-strings = (15067319853852934427L, 12316368836383623663L)
-doubles = (14398350657954990965L, 9297636822779032936L)
+INTEGER = (-1483983239981938297, -5071550066611775474)
+STRING = (-3213775263296764987, -5105524488294578685)
+DOUBLE = (-3871523563478301052, -6436427287173059619)
 
-def mainloop(program, func_map, bracket_map, args=[]):
+def mainloop(program, bracket_map, args=[], types=[INTEGER, STRING, DOUBLE]):
     pc = 0
-    tape = Tape()
+    tape = Tape(types)
     for arg in args:
         tape.set(ord(str(arg)[0]))
         tape.advance()
@@ -103,10 +103,12 @@ def mainloop(program, func_map, bracket_map, args=[]):
         pc += 1
 
 class Tape(object):
-    def __init__(self):
+    def __init__(self, types):
         self.thetape = [0]
         self.position = 0
         self.objecttape = {}
+        for t in types:
+            self.objecttape[t] = [0]
 
     def get(self):
         return self.thetape[self.position]
@@ -124,7 +126,7 @@ class Tape(object):
         self.position -= 1
 
     def create_str_obj(self):
-        self.objecttape["STRING"] = [""]
+        self.objecttape[(1,1)] = [0]
 
 # from struct import unpack
 from rpython.rlib.rstruct.runpack import runpack as unpack
@@ -163,7 +165,7 @@ def run(fp, args=[]):
     os.close(fp)
     program, bm = parse(program_contents)
     func_map = {";" : str_add }
-    mainloop(program, func_map, bm, args)
+    mainloop(program, bm, args)
 
 def entry_point(argv):
     more_args = False
