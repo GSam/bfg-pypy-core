@@ -37,7 +37,9 @@ def str_add(a, b):
 
 from rpython.rtyper.lltypesystem import rffi, lltype
 from rpython.translator.tool.cbuild import ExternalCompilationInfo
-external_function = rffi.llexternal('myprint', [], lltype.Void, compilation_info=ExternalCompilationInfo(libraries=[os.path.abspath('./testlib.so')]))
+external_function = rffi.llexternal('myprint', [], lltype.Void,
+                                    compilation_info=ExternalCompilationInfo(libraries=[os.path.abspath('./testlib.so')],
+                                                                             includes=[os.path.abspath('./stdlib.h')]))
 
 # struct.unpack('>QQ', uuid.UUID(int=uuid.uuid4().int | (1 << 127)).bytes)
 integers = (18205517678580420323L, 13758535853895619339L)
