@@ -1,0 +1,10 @@
+TYPE_PCRE_EXTRA = rffi.CStruct('pcre_extra',
+                               ('flags', rffi.ULONG),
+                               ('study_data', rffi.VOIDP),
+                               ('match_limit', rffi.ULONG),
+                               ('callout_data', rffi.VOIDP),
+                               ('tables', rffi.CCHARP),
+                               ('match_limit_recursion', rffi.ULONG),
+                               ('mark', rffi.CCHARPP))
+
+ptr = lltype.malloc(rffi.CArray(TYPE_PCRE_EXTRA), 2, flavor='raw', zero=True)
