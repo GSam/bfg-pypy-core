@@ -47,6 +47,37 @@ INTEGER = (-6855051840143784798, -7880198636693933229)
 STRING = (-5744892467500213749, 739713154171887357)
 DOUBLE = (-5419088552942547567, 806613043255133199)
 
+TYPE_BFG_OBJECT = rffi.CStruct('bfg_object',
+                               ('GUID_high', rffi.ULONGLONG), # unneeded?
+                               ('GUID_low', rffi.ULONGLONG), # unneeded?
+                               ('metadata', rffi.ULONGLONG),
+                               ('data', rffi.VOIDP))
+
+TYPE_BFG_OBJECT_PTR = lltype.Ptr(TYPE_BFG_OBJECT)
+TYPE_BFG_OBJECT_ARRAY = rffi.CArray(TYPE_BFG_OBJECT)
+
+TYPE_BFG_TYPE_SPACE = rffi.CStruct('bfg_type_space',
+                                   ('GUID_high', rffi.ULONGLONG),
+                                   ('GUID_low', rffi.ULONGLONG),
+                                   ('index', rffi.UINT),
+                                   ('length', rffi.UINT),
+                                   ('alloc_length', rffi.UINT),
+                                   ('objects', TYPE_BFG_OBJECT_PTR))
+
+TYPE_BFG_TYPE_SPACE_PTR = lltype.Ptr(TYPE_BFG_TYPE_SPACE)
+TYPE_BFG_TAPE_ARRAY = rffi.CArray(TYPE_BFG_TYPE_SPACE_PTR)
+
+aa = lltype.malloc(TYPE_BFG_TAPE_ARRAY, 1, flavor='raw')
+aa[0] = lltype.malloc(TYPE_BFG_TYPE_SPACE, flavor='raw')
+
+rffi.make(TYPE_BFG_TYPE_SPACE,
+          c_GUID_high=rffi.cast(rffi.ULONG, 1),
+          c_GUID_low=rffi.cast(rffi.ULONG, 1),
+          length=rffi.cast(rffi.UINT, 0),
+          index=rffi.cast(rffi.UINT, 0))
+
+tape_array_length = 1
+
 def mainloop(program, bracket_map, args=[], types=[INTEGER, STRING, DOUBLE]):
     pc = 0
     tape = Tape(types)
