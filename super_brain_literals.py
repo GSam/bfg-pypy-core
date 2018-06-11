@@ -41,10 +41,11 @@ external_function = rffi.llexternal('myprint', [], lltype.Void,
                                     compilation_info=ExternalCompilationInfo(libraries=[os.path.abspath('./testlib.so')],
                                                                              includes=[os.path.abspath('./stdlib.h')]))
 
-# struct.unpack('>QQ', uuid.UUID(int=uuid.uuid4().int | (1 << 127)).bytes)
-INTEGER = (-1483983239981938297, -5071550066611775474)
-STRING = (-3213775263296764987, -5105524488294578685)
-DOUBLE = (-3871523563478301052, -6436427287173059619)
+# Note to self: UUID4 has some fixed bits
+# struct.unpack('>qq', uuid.UUID(int=uuid.UUID(bytes=os.urandom(16)).int | (1 << 127)).bytes)
+INTEGER = (-6855051840143784798, -7880198636693933229)
+STRING = (-5744892467500213749, 739713154171887357)
+DOUBLE = (-5419088552942547567, 806613043255133199)
 
 def mainloop(program, bracket_map, args=[], types=[INTEGER, STRING, DOUBLE]):
     pc = 0
