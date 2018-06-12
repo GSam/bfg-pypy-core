@@ -1,3 +1,5 @@
+- vtable type lookup when generalizing functions and type tables
+
 TYPE_PCRE_EXTRA = rffi.CStruct('pcre_extra',
                                ('flags', rffi.ULONG),
                                ('study_data', rffi.VOIDP),
