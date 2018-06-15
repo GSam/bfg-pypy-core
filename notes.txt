@@ -1,4 +1,5 @@
 - vtable type lookup when generalizing functions and type tables
+- rmmap the input variables, so that the outside can construct or read them
 
 TYPE_PCRE_EXTRA = rffi.CStruct('pcre_extra',
                                ('flags', rffi.ULONG),
@@ -10,3 +11,36 @@ TYPE_PCRE_EXTRA = rffi.CStruct('pcre_extra',
                                ('mark', rffi.CCHARPP))
 
 ptr = lltype.malloc(rffi.CArray(TYPE_PCRE_EXTRA), 2, flavor='raw', zero=True)
+
+import mmap
+import os
+import ctypes
+
+f = open("hello.txt", "w")
+f.write("Hello Python!\n")
+f.close()
+f = open("hello.txt", "rw+")
+map = mmap.mmap(f.fileno(), 0, mmap.MAP_SHARED, mmap.PROT_WRITE)
+map.seek(os.SEEK_END)
+map.resize(100)
+map.seek(10)
+map.write("Hello world!")
+
+pid = os.fork()
+
+if pid == 0: # In a child process
+    g = open("hello.txt", "rw+")
+    map = mmap.mmap(g.fileno(), 0, mmap.MAP_SHARED, mmap.PROT_WRITE)
+    map.seek(0)
+    print(map.readline())
+
+    int_ptr = ctypes.c_byte.from_buffer(map)
+    print dir(int_ptr)
+    print type(ctypes.addressof(int_ptr))
+    int_ptr.value = 52
+    map.seek(0)
+
+    print(map.readline())
+
+
+    map.close()
