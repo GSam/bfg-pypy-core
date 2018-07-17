@@ -38,7 +38,8 @@ def str_add(a, b):
 from rpython.rtyper.lltypesystem import rffi, lltype
 from rpython.translator.tool.cbuild import ExternalCompilationInfo
 external_function = rffi.llexternal('myprint', [], lltype.Void,
-                                    compilation_info=ExternalCompilationInfo(libraries=[os.path.abspath('./testlib.so')],
+                                    compilation_info=ExternalCompilationInfo(libraries=['testlib'],
+                                                                             library_dirs=[os.path.abspath('.')],#/testlib.so')],
                                                                              includes=[os.path.abspath('./stdlib.h')]))
 
 # Note to self: UUID4 has some fixed bits
