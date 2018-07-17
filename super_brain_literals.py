@@ -73,8 +73,8 @@ aa[0] = lltype.malloc(TYPE_BFG_TYPE_SPACE, flavor='raw')
 rffi.make(TYPE_BFG_TYPE_SPACE,
           c_GUID_high=rffi.cast(rffi.ULONG, 1),
           c_GUID_low=rffi.cast(rffi.ULONG, 1),
-          length=rffi.cast(rffi.UINT, 0),
-          index=rffi.cast(rffi.UINT, 0))
+          c_length=rffi.cast(rffi.UINT, 0),
+          c_index=rffi.cast(rffi.UINT, 0))
 
 tape_array_length = 1
 
