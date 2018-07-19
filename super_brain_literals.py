@@ -74,11 +74,29 @@ TYPE_BFG_TAPE_ARRAY = rffi.CArray(TYPE_BFG_TYPE_SPACE_PTR)
 aa = lltype.malloc(TYPE_BFG_TAPE_ARRAY, 1, flavor='raw')
 aa[0] = lltype.malloc(TYPE_BFG_TYPE_SPACE, flavor='raw')
 
-rffi.make(TYPE_BFG_TYPE_SPACE,
-          c_GUID_high=rffi.cast(rffi.ULONG, 1),
-          c_GUID_low=rffi.cast(rffi.ULONG, 1),
-          c_length=rffi.cast(rffi.UINT, 0),
-          c_index=rffi.cast(rffi.UINT, 0))
+test = rffi.make(TYPE_BFG_TYPE_SPACE,
+                 c_GUID_high=rffi.cast(rffi.ULONG, INTEGER[0]),#1),
+                 c_GUID_low=rffi.cast(rffi.ULONG, 1),
+                 c_length=rffi.cast(rffi.UINT, 2),
+                 c_index=rffi.cast(rffi.UINT, 0),
+                 c_alloc_length=rffi.cast(rffi.UINT, 2))
+
+# test.c_objects = lltype.nullptr(TYPE_BFG_OBJECT_PTR.TO)
+test_object = rffi.make(TYPE_BFG_OBJECT,
+                        c_metadata=rffi.cast(rffi.ULONGLONG, 0),
+                        c_data=lltype.nullptr(rffi.VOIDP.TO))
+#test.c_objects = test_object
+
+testb = lltype.malloc(TYPE_BFG_OBJECT_ARRAY, 2, flavor='raw')
+testb[0].c_metadata = rffi.cast(rffi.ULONGLONG, 20)
+testb[1].c_metadata = rffi.cast(rffi.ULONGLONG, 43)
+test.c_objects = rffi.cast(TYPE_BFG_OBJECT_PTR, testb)
+
+external_function2 = rffi.llexternal('bfg_execute', [rffi.ULONGLONG,
+                                                     rffi.ULONGLONG,
+                                                     TYPE_BFG_TYPE_SPACE_PTR,
+                                                     rffi.UINT], lltype.Bool,
+                                     compilation_info=eci)
 
 tape_array_length = 1
 
@@ -135,6 +153,7 @@ def mainloop(program, bracket_map, args=[], types=[INTEGER, STRING, DOUBLE]):
             # testlib = ffi.dlopen(os.path.abspath('./testlib.so'))
             # testlib.myprint()
             external_function()
+            external_function2(0, 0, test, 1)
 
         pc += 1
 
