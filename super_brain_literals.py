@@ -52,8 +52,8 @@ STRING = (-5744892467500213749, 739713154171887357)
 DOUBLE = (-5419088552942547567, 806613043255133199)
 
 TYPE_BFG_OBJECT = rffi.CStruct('bfg_object',
-                               ('GUID_high', rffi.ULONGLONG), # unneeded?
-                               ('GUID_low', rffi.ULONGLONG), # unneeded?
+                               # ('GUID_high', rffi.ULONGLONG), # unneeded?
+                               # ('GUID_low', rffi.ULONGLONG), # unneeded?
                                ('metadata', rffi.ULONGLONG),
                                ('data', rffi.VOIDP))
 
