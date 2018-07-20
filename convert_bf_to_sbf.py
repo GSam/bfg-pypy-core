@@ -11,7 +11,8 @@ f2 = open(file2, 'wb')
 token_width = 'Q'
 
 for b in f1.read():
-    if b == '\n':
+    # Ignore brainfuck comments and other metadata
+    if b not in ('[', ']', '<', '>', '+', '-', ',', '.'):
         continue
     print b, 1
     data = struct.pack(">%s" % token_width, 0)
