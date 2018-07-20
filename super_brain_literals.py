@@ -53,7 +53,7 @@ TYPE_BFG_OBJECT = rffi.CStruct('bfg_object',
                                ('metadata', rffi.ULONGLONG),
                                ('data', rffi.VOIDP))
 
-SIZE_BFG_OBJECT = rffi.sizeof(TYPE_BFG_OBJECT)
+SIZE_BFG_OBJECT = rffi.cast(rffi.UINT, rffi.sizeof(TYPE_BFG_OBJECT))
 
 TYPE_BFG_OBJECT_PTR = lltype.Ptr(TYPE_BFG_OBJECT)
 TYPE_BFG_OBJECT_ARRAY = rffi.CArray(TYPE_BFG_OBJECT)
@@ -62,9 +62,9 @@ TYPE_BFG_OBJECT_ARRAY_PTR = lltype.Ptr(TYPE_BFG_OBJECT_ARRAY)
 TYPE_BFG_TYPE_SPACE = rffi.CStruct('bfg_type_space',
                                    ('GUID_high', rffi.ULONGLONG),
                                    ('GUID_low', rffi.ULONGLONG),
-                                   ('index', rffi.UINT),
-                                   ('length', rffi.UINT),
-                                   ('alloc_length', rffi.UINT),
+                                   ('index', rffi.ULONGLONG),
+                                   ('length', rffi.ULONGLONG),
+                                   ('alloc_length', rffi.ULONGLONG),
                                    ('objects', TYPE_BFG_OBJECT_PTR))
 
 TYPE_BFG_TYPE_SPACE_PTR = lltype.Ptr(TYPE_BFG_TYPE_SPACE)
@@ -76,9 +76,9 @@ aa[0] = lltype.malloc(TYPE_BFG_TYPE_SPACE, flavor='raw')
 test = rffi.make(TYPE_BFG_TYPE_SPACE,
                  c_GUID_high=rffi.cast(rffi.ULONG, INTEGER[0]),#1),
                  c_GUID_low=rffi.cast(rffi.ULONG, 1),
-                 c_length=rffi.cast(rffi.UINT, 2),
-                 c_index=rffi.cast(rffi.UINT, 0),
-                 c_alloc_length=rffi.cast(rffi.UINT, 2))
+                 c_length=rffi.cast(rffi.ULONG, 2),
+                 c_index=rffi.cast(rffi.ULONG, 0),
+                 c_alloc_length=rffi.cast(rffi.ULONG, 2))
 
 # test.c_objects = lltype.nullptr(TYPE_BFG_OBJECT_PTR.TO)
 test_object = rffi.make(TYPE_BFG_OBJECT,
@@ -149,6 +149,9 @@ def mainloop(program, bracket_map, args=[], types=[INTEGER, STRING, DOUBLE]):
             # ffi.cdef("""void myprint(void);""")
             # testlib = ffi.dlopen(os.path.abspath('./testlib.so'))
             # testlib.myprint()
+
+            # import pdb
+            # pdb.set_trace()
             external_function()
             external_function2(0, 0, test, 1)
 
@@ -203,6 +206,7 @@ class Tape(object):
             else:
                 self.thetape.c_length += 1
     def devance(self):
+        # TODO Is left-clamping the most sensible operation
         if self.thetape.c_index == 0:
             return
         self.thetape.c_index -= 1
