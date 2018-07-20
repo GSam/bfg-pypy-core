@@ -31,10 +31,6 @@ jitdriver = JitDriver(greens=['pc', 'program', 'bracket_map'], reds=['tape'],
 def get_matching_bracket(bracket_map, pc):
     return bracket_map[pc]
 
-@purefunction
-def str_add(a, b):
-    return str(a) + str(b)
-
 from rpython.rtyper.lltypesystem import rffi, lltype
 from rpython.translator.tool.cbuild import ExternalCompilationInfo
 
@@ -59,6 +55,7 @@ TYPE_BFG_OBJECT = rffi.CStruct('bfg_object',
 
 TYPE_BFG_OBJECT_PTR = lltype.Ptr(TYPE_BFG_OBJECT)
 TYPE_BFG_OBJECT_ARRAY = rffi.CArray(TYPE_BFG_OBJECT)
+TYPE_BFG_OBJECT_ARRAY_PTR = lltype.Ptr(TYPE_BFG_OBJECT_ARRAY)
 
 TYPE_BFG_TYPE_SPACE = rffi.CStruct('bfg_type_space',
                                    ('GUID_high', rffi.ULONGLONG),
@@ -88,8 +85,8 @@ test_object = rffi.make(TYPE_BFG_OBJECT,
 #test.c_objects = test_object
 
 testb = lltype.malloc(TYPE_BFG_OBJECT_ARRAY, 2, flavor='raw')
-testb[0].c_metadata = rffi.cast(rffi.ULONGLONG, 20)
-testb[1].c_metadata = rffi.cast(rffi.ULONGLONG, 43)
+testb[0].c_metadata = rffi.cast(rffi.ULONGLONG, 0)#20)
+testb[1].c_metadata = rffi.cast(rffi.ULONGLONG, 0)#43)
 test.c_objects = rffi.cast(TYPE_BFG_OBJECT_PTR, testb)
 
 external_function2 = rffi.llexternal('bfg_execute', [rffi.ULONGLONG,
@@ -108,8 +105,6 @@ def mainloop(program, bracket_map, args=[], types=[INTEGER, STRING, DOUBLE]):
         tape.advance()
     for arg in args:
         tape.devance()
-
-    #func_map = {";" : str_add }
 
     while pc < len(program):
         jitdriver.jit_merge_point(pc=pc, tape=tape, program=program,
@@ -159,29 +154,47 @@ def mainloop(program, bracket_map, args=[], types=[INTEGER, STRING, DOUBLE]):
 
 class Tape(object):
     def __init__(self, types):
-        self.thetape = [0]
-        self.position = 0
-        self.objecttape = {}
-        for t in types:
-            self.objecttape[t] = [0]
+        # self.thetape = [0]
+        # self.position = 0
+        self.thetape = test
 
     def get(self):
-        return self.thetape[self.position]
+        objects = rffi.cast(TYPE_BFG_OBJECT_ARRAY_PTR,
+                            self.thetape.c_objects)
+        return objects[self.thetape.c_index].c_metadata
     def set(self, val):
-        self.thetape[self.position] = val
+        objects = rffi.cast(TYPE_BFG_OBJECT_ARRAY_PTR,
+                            self.thetape.c_objects)
+        objects[self.thetape.c_index].c_metadata = rffi.cast(rffi.ULONGLONG, val)
     def inc(self):
-        self.thetape[self.position] += 1
+        objects = rffi.cast(TYPE_BFG_OBJECT_ARRAY_PTR,
+                            self.thetape.c_objects)
+        objects[self.thetape.c_index].c_metadata += 1
     def dec(self):
-        self.thetape[self.position] -= 1
+        objects = rffi.cast(TYPE_BFG_OBJECT_ARRAY_PTR,
+                            self.thetape.c_objects)
+        objects[self.thetape.c_index].c_metadata -= 1
     def advance(self):
-        self.position += 1
-        if len(self.thetape) <= self.position:
-            self.thetape.append(0)
-    def devance(self):
-        self.position -= 1
+        objects = rffi.cast(TYPE_BFG_OBJECT_ARRAY_PTR,
+                            self.thetape.c_objects)
+        self.thetape.c_index += 1
+        if self.thetape.c_length <= self.thetape.c_index:
+            if self.thetape.c_alloc_length <= self.thetape.c_length:
+                # Double allocated length
+                self.thetape.c_alloc_length *= 2
+                temp = lltype.malloc(TYPE_BFG_OBJECT_ARRAY, self.thetape.c_alloc_length, flavor='raw')
+                rffi.c_memset(rffi.cast(rffi.VOIDP, temp),
+                              0,
+                              self.thetape.c_alloc_length)
 
-    def create_str_obj(self):
-        self.objecttape[(1,1)] = [0]
+                rffi.c_memcpy(rffi.cast(rffi.VOIDP, self.thetape.c_objects),
+                              rffi.cast(rffi.VOIDP, temp),
+                              self.thetape.c_length)
+                self.thetape.c_length += 1
+            else:
+                self.thetape.c_length += 1
+    def devance(self):
+        self.thetape.c_index -= 1
 
 # from struct import unpack
 from rpython.rlib.rstruct.runpack import runpack as unpack
@@ -219,7 +232,6 @@ def run(fp, args=[]):
         program_contents += read
     os.close(fp)
     program, bm = parse(program_contents)
-    func_map = {";" : str_add }
     mainloop(program, bm, args)
 
 def entry_point(argv):
