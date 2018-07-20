@@ -76,20 +76,20 @@ aa[0] = lltype.malloc(TYPE_BFG_TYPE_SPACE, flavor='raw')
 test = rffi.make(TYPE_BFG_TYPE_SPACE,
                  c_GUID_high=rffi.cast(rffi.ULONG, INTEGER[0]),#1),
                  c_GUID_low=rffi.cast(rffi.ULONG, 1),
-                 c_length=rffi.cast(rffi.ULONG, 2),
+                 c_length=rffi.cast(rffi.ULONG, 1),
                  c_index=rffi.cast(rffi.ULONG, 0),
-                 c_alloc_length=rffi.cast(rffi.ULONG, 2))
+                 c_alloc_length=rffi.cast(rffi.ULONG, 1))
 
 # test.c_objects = lltype.nullptr(TYPE_BFG_OBJECT_PTR.TO)
 test_object = rffi.make(TYPE_BFG_OBJECT,
                         c_metadata=rffi.cast(rffi.ULONGLONG, 0),
                         c_data=lltype.nullptr(rffi.VOIDP.TO))
-#test.c_objects = test_object
+test.c_objects = test_object
 
-testb = lltype.malloc(TYPE_BFG_OBJECT_ARRAY, 2, flavor='raw')
-testb[0].c_metadata = rffi.cast(rffi.ULONGLONG, 0)#20)
-testb[1].c_metadata = rffi.cast(rffi.ULONGLONG, 0)#43)
-test.c_objects = rffi.cast(TYPE_BFG_OBJECT_PTR, testb)
+#testb = lltype.malloc(TYPE_BFG_OBJECT_ARRAY, 2, flavor='raw')
+#testb[0].c_metadata = rffi.cast(rffi.ULONGLONG, 0)#20)
+#testb[1].c_metadata = rffi.cast(rffi.ULONGLONG, 0)#43)
+#test.c_objects = rffi.cast(TYPE_BFG_OBJECT_PTR, testb)
 
 external_function2 = rffi.llexternal('bfg_execute', [rffi.ULONGLONG,
                                                      rffi.ULONGLONG,
