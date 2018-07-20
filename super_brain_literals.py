@@ -53,6 +53,8 @@ TYPE_BFG_OBJECT = rffi.CStruct('bfg_object',
                                ('metadata', rffi.ULONGLONG),
                                ('data', rffi.VOIDP))
 
+SIZE_BFG_OBJECT = rffi.sizeof(TYPE_BFG_OBJECT)
+
 TYPE_BFG_OBJECT_PTR = lltype.Ptr(TYPE_BFG_OBJECT)
 TYPE_BFG_OBJECT_ARRAY = rffi.CArray(TYPE_BFG_OBJECT)
 TYPE_BFG_OBJECT_ARRAY_PTR = lltype.Ptr(TYPE_BFG_OBJECT_ARRAY)
@@ -185,15 +187,24 @@ class Tape(object):
                 temp = lltype.malloc(TYPE_BFG_OBJECT_ARRAY, self.thetape.c_alloc_length, flavor='raw')
                 rffi.c_memset(rffi.cast(rffi.VOIDP, temp),
                               0,
-                              self.thetape.c_alloc_length)
+                              SIZE_BFG_OBJECT*self.thetape.c_alloc_length)
 
                 rffi.c_memcpy(rffi.cast(rffi.VOIDP, self.thetape.c_objects),
                               rffi.cast(rffi.VOIDP, temp),
-                              self.thetape.c_length)
+                              SIZE_BFG_OBJECT*self.thetape.c_length)
+
+                # Free the old memory, not sure if this works yet...
+                # Does it free alloc'd memory from the C-bindings?
+                lltype.free(self.thetape.c_objects, flavor='raw')
+
+                self.thetape.c_objects = rffi.cast(TYPE_BFG_OBJECT_PTR, temp)
+
                 self.thetape.c_length += 1
             else:
                 self.thetape.c_length += 1
     def devance(self):
+        if self.thetape.c_index == 0:
+            return
         self.thetape.c_index -= 1
 
 # from struct import unpack
