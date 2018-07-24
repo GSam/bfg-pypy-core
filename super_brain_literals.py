@@ -162,6 +162,10 @@ class Tape(object):
         # self.thetape = [0]
         # self.position = 0
         self.thetape = test
+        test_object = rffi.make(TYPE_BFG_OBJECT,
+                                c_metadata=rffi.cast(rffi.ULONGLONG, 0),
+                                c_data=lltype.nullptr(rffi.VOIDP.TO))
+        test.c_objects = test_object
 
     def get(self):
         objects = rffi.cast(TYPE_BFG_OBJECT_ARRAY_PTR,
