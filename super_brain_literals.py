@@ -196,8 +196,8 @@ class Tape(object):
                               0,
                               SIZE_BFG_OBJECT*self.thetape.c_alloc_length)
 
-                rffi.c_memcpy(rffi.cast(rffi.VOIDP, self.thetape.c_objects),
-                              rffi.cast(rffi.VOIDP, temp),
+                rffi.c_memcpy(rffi.cast(rffi.VOIDP, temp),
+                              rffi.cast(rffi.VOIDP, self.thetape.c_objects),
                               SIZE_BFG_OBJECT*self.thetape.c_length)
 
                 # Free the old memory, not sure if this works yet...
