@@ -269,6 +269,15 @@ def entry_point(argv):
 
     return 0
 
+def write_output(fd):
+    for i in xrange(test.c_length):
+        #os.write(
+        ts = rffi.cast(lltype.Ptr(rffi.CArray(TYPE_BFG_TYPE_SPACE)), test)
+        os.write(
+        import pdb
+        pdb.set_trace()
+        ts[i].c_objects
+
 # from rpython.rlib.rStringIO import RStringIO
 from rpython.rlib.entrypoint import entrypoint_highlevel
 
