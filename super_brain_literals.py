@@ -272,8 +272,9 @@ def entry_point(argv):
 # from rpython.rlib.rStringIO import RStringIO
 from rpython.rlib.entrypoint import entrypoint_highlevel
 
-@entrypoint_highlevel('main', [rffi.CCHARP], c_name='bfg_execute_source')
-def entry_point_binary(program_contents):
+@entrypoint_highlevel('main', [rffi.CCHARP, rffi.INT], c_name='bfg_execute_source')
+def entry_point_binary(source, length):
+    program_contents = rffi.charpsize2str(source, length)
     program, bm = parse(program_contents)
     mainloop(program, bm, [])
 
