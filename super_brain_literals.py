@@ -269,6 +269,16 @@ def entry_point(argv):
 
     return 0
 
+# from rpython.rlib.rStringIO import RStringIO
+from rpython.rlib.entrypoint import entrypoint_highlevel
+
+@entrypoint_highlevel('main', [rffi.CCHARP], c_name='bfg_execute_source')
+def entry_point_binary(program_contents):
+    program, bm = parse(program_contents)
+    mainloop(program, bm, [])
+
+    return rffi.cast(rffi.INT, 0)
+
 def target(*args):
     return entry_point, None
     
